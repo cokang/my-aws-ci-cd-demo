@@ -3,14 +3,32 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.12
+      python: 3.10   # or match your Ubuntu EC2 python version
     commands:
-      - pip install -r requirements.txt
+      - echo "Installing dependencies..."
+      - pip install --upgrade pip
+      - pip install awscli
+
   build:
     commands:
-      - echo "Build completed. Running tests..."
-      - python -m py_compile app.py   # simple syntax check
-      - zip -r app.zip . -x "*.git*"
+      - echo "Zipping app source code..."
+      - zip -r app.zip ./*
+
+  post_build:
+    commands:
+      - echo "Copying artifact to S3..."
+      - aws s3 cp app.zip s3://ci-cd-demo-cokang/build-output.zip
+      - echo "Triggering remote deployment via SSM..."
+      - aws ssm send-command \
+          --targets "Key=instanceIds,Values=i-0d313aa7e447ab844" \
+          --document-name "AWS-RunShellScript" \
+          --comment "Deploy Flask App" \
+          --parameters 'commands=[
+            "aws s3 cp s3://ci-cd-demo-cokang/build-output.zip /tmp/build-output.zip",
+            "mkdir -p /home/ubuntu/myapp",
+            "unzip -o /tmp/build-output.zip -d /home/ubuntu/myapp",
+            "sudo systemctl restart myapp.service"
+          ]'
 artifacts:
   files:
     - app.zip
