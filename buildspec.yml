@@ -24,7 +24,7 @@ phases:
           --document-name "AWS-RunShellScript" \
           --comment "Deploy Flask App" \
           --parameters 'commands=[
-            "aws s3 cp s3://your-bucket-name/app.zip /tmp/app.zip",
+            "aws s3 cp s3://ci-cd-demo-cokang/build-output.zip tmp/build-output.zip",
             "mkdir -p /home/ubuntu/myapp",
             "unzip -o /tmp/build-output.zip -d /home/ubuntu/myapp",
             "unzip -o /home/ubuntu/myapp/app.zip -d /home/ubuntu/myapp",
