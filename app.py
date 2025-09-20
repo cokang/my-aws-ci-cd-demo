@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hello from AWS CI/CD pipeline! This is cokang, Test 3"
+    return "Hello from AWS CI/CD pipeline! This is cokang, Test 4"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
